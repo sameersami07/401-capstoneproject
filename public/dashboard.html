@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Budget Tracker</title>
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #e8f5e9, #fffde7);
+      --text: #1b5e20;
+      --card-bg: rgba(255, 255, 255, 0.6);
+      --card-glow: #66bb6a;
+      --dark-bg: linear-gradient(135deg, #1b5e20, #4e342e);
+      --dark-text: #fffde7;
+      --dark-card: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: all 0.5s ease;
+    }
+
+    .dark-mode {
+      background: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      backdrop-filter: blur(15px);
+      animation: slideIn 1s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    h1.typewriter {
+      overflow: hidden;
+      border-right: .15em solid var(--text);
+      white-space: nowrap;
+      letter-spacing: .1em;
+      animation: typing 3s steps(40, end), blink-caret .75s step-end infinite;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: var(--text) }
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      flex: 1 1 45%;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 0 15px var(--card-glow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px var(--card-glow);
+    }
+
+    form {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input, select, button {
+      padding: 0.8rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      box-shadow: 0 0 10px #81c784;
+    }
+
+    button {
+      background-color: #2e7d32;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+      transform: scale(1.02);
+    }
+
+    #transaction-list {
+      margin-top: 2rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    #transaction-list li {
+      background: rgba(255,255,255,0.7);
+      margin-bottom: 10px;
+      padding: 1rem;
+      border-left: 5px solid;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: slideIn 0.5s ease;
+    }
+
+    #transaction-list li.income {
+      border-color: #43a047;
+    }
+
+    #transaction-list li.expense {
+      border-color: #ef6c00;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .toggle-switch {
+      width: 60px;
+      height: 30px;
+      background: #bbb;
+      border-radius: 30px;
+      display: block;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .toggle-switch::after {
+      content: "";
+      width: 25px;
+      height: 25px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2.5px;
+      left: 2.5px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="checkbox"]:checked + .toggle-switch {
+      background: #2e7d32;
+    }
+
+    input[type="checkbox"]:checked + .toggle-switch::after {
+      transform: translateX(30px);
+    }
+
+    .dark-mode .card {
+      background: var(--dark-card);
+      box-shadow: 0 0 15px #a5d6a7;
+    }
+
+    .dark-mode h1 {
+      border-color: #fffde7;
+    }
+  </style>
+</head>
+<body>
+  <div class="theme-toggle">
+    <input type="checkbox" id="toggle-mode">
+    <label for="toggle-mode" class="toggle-switch"></label>
+  </div>
+
+  <div class="container">
+    <h1 id="welcome" class="typewriter">🌿 Welcome to Your Budget Garden!</h1>
+
+    <div class="summary">
+      <div class="card income">💵 Income: ₹<span id="income">0</span></div>
+      <div class="card expense">💸 Expense: ₹<span id="expense">0</span></div>
+      <div class="card balance">🧮 Balance: ₹<span id="balance">0</span></div>
+      <div class="card savings">💰 Savings: ₹<span id="savings">0</span></div>
+    </div>
+
+    <form id="transaction-form">
+      <input type="text" id="description" placeholder="✏️ Description" required />
+      <input type="number" id="amount" placeholder="💰 Amount" required />
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button type="submit">➕ Add</button>
+    </form>
+
+    <ul id="transaction-list"></ul>
+  </div>
+
+  <script>
+    const toggle = document.getElementById("toggle-mode");
+    toggle.addEventListener("change", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+
+    const incomeEl = document.getElementById("income");
+    const expenseEl = document.getElementById("expense");
+    const balanceEl = document.getElementById("balance");
+    const savingsEl = document.getElementById("savings");
+    const list = document.getElementById("transaction-list");
+    const form = document.getElementById("transaction-form");
+
+    let income = 0, expense = 0;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const desc = document.getElementById("description").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const type = document.getElementById("type").value;
+
+      const li = document.createElement("li");
+      li.classList.add(type);
+      li.innerHTML = `<span>${type === 'income' ? '🟢' : '🟠'} ${desc}</span><strong>₹${amount}</strong>`;
+      list.prepend(li);
+
+      if (type === "income") {
+        income += amount;
+      } else {
+        expense += amount;
+      }
+
+      updateSummary();
+      form.reset();
+    });
+
+    function updateSummary() {
+      const balance = income - expense;
+      const savings = income * 0.2;
+
+      incomeEl.textContent = income;
+      expenseEl.textContent = expense;
+      balanceEl.textContent = balance;
+      savingsEl.textContent = savings.toFixed(2);
+    }
+  </script>
+</body>
+</html>
